@@ -8,7 +8,7 @@
 		<version>3.3.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.finampy</groupId>
+	<groupId>com.pethost</groupId>
 	<artifactId>pethost</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>pethost</name>
