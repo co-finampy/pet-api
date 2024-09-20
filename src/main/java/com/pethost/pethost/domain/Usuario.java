@@ -1,4 +1,4 @@
-package com.finampy.pethost.domain;
+package com.pethost.pethost.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

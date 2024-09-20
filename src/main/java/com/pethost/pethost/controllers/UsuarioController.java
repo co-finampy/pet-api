@@ -1,4 +1,4 @@
-package com.finampy.pethost.controllers;
+package com.pethost.pethost.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
