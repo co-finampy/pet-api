@@ -1,4 +1,4 @@
-package com.finampy.pethost.domain;
+package com.pethost.pethost.domain;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -28,7 +28,7 @@ public class Pets implements Serializable {
     private String tamanho;
 
     @Temporal(TemporalType.DATE)
-    private Date dateAni;
+    private Date dataNascimento;  // Renamed for clarity
 
     private boolean vacina;
 
@@ -38,7 +38,7 @@ public class Pets implements Serializable {
 
     private LocalDateTime criadoEm;
 
-    // Getters e Setters
+    // Getters and Setters
 
     public long getId() {
         return id;
@@ -96,12 +96,12 @@ public class Pets implements Serializable {
         this.tamanho = tamanho;
     }
 
-    public Date getDateAni() {
-        return dateAni;
+    public Date getDataNascimento() {  // Adjusted method name
+        return dataNascimento;
     }
 
-    public void setDateAni(Date dateAni) {
-        this.dateAni = dateAni;
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
 
     public boolean isVacina() {
