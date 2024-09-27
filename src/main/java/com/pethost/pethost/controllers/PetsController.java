@@ -1,35 +1,33 @@
 package com.pethost.pethost.controllers;
 
-import com.pethost.pethost.domain.Pets;
-import com.pethost.pethost.repositories.PetsRepositories;
+import com.pethost.pethost.domain.Pet;
+import com.pethost.pethost.services.PetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/v1")
+@RequestMapping(value = "/v1/pets")
 @Tag(name = "Rotas Login")
 @CrossOrigin(origins = "*")
 public class PetsController {
 
     @Autowired
-    private PetsRepositories petsRepositories;
+    PetService petService;
 
-    @GetMapping("/pets")
+    @GetMapping("")
     @Operation(summary = "Rota de listar pets" , description = "Responsavel por listar  pet ")
-    public List<Pets> listarPets() {
-        return petsRepositories.findAll();
+    public List<Pet> listarPets() {
+        return petService.findAllPets();
     }
 
-    @GetMapping("/pets/{id}")
-
-    public ResponseEntity<Pets> listarPetUnico(@PathVariable(value = "id") long id) {
-        Pets pet = petsRepositories.findById(id);
+    @GetMapping("{id}")
+    public ResponseEntity<Pet> listarPetUnico(@PathVariable(value = "id") long id) {
+        Pet pet = petService.buscarPorId(id);
         if (pet != null) {
             return ResponseEntity.ok(pet);
         } else {
@@ -37,21 +35,18 @@ public class PetsController {
         }
     }
 
-    @PostMapping("/pets")
-
-    public Pets salvarPet(@RequestBody Pets pet) {
-        return petsRepositories.save(pet);
+    @PostMapping("")
+    public Pet criarPet(@RequestBody Pet pet) {
+        return petService.criarPet(pet);
     }
 
-    @DeleteMapping("/pets")
-
-    public void deletarPets(@RequestBody Pets pets) {
-        petsRepositories.delete(pets);
+    @DeleteMapping("/{id}")
+    public void deletarPets(@PathVariable(value = "id") long id) {
+        petService.deletarPet(id);
     }
 
-    @PutMapping("/pets")
-
-    public Pets atualizarPets(@RequestBody Pets pets) {
-        return petsRepositories.save(pets);
+    @PutMapping("")
+    public Pet atualizarPets(@RequestBody Pet pet) {
+        return petService.atualizarPet(pet);
     }
 }
