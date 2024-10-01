@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -45,12 +44,8 @@ public class Usuario implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "datas_disponiveis_id")
-    private com.finampy.pethost.domain.Calendario datasDisponiveis;
+    private Calendario datasDisponiveis;
 
     @Column(name = "token")
     private String token;
-
-    @OneToMany
-    @JoinColumn(name = "usuario_id")
-    private List<Pet> pets;
 }

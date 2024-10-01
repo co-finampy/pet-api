@@ -1,6 +1,6 @@
 package com.pethost.pethost.services;
 
-import com.finampy.pethost.domain.Reserva;
+import com.pethost.pethost.domain.Reserva; // Ajuste o pacote de importação
 import com.pethost.pethost.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
