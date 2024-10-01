@@ -8,38 +8,58 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/v1/usuarios")
+@RequestMapping("/api/users")
 public class UsuarioController {
 
     @Autowired
-    UsuarioService usuarioService;
+    private UsuarioService usuarioService;
 
-    @GetMapping()
+    // Endpoint de teste
+    @GetMapping("/")
     @ResponseStatus(HttpStatus.OK)
-    public List<Usuario> listarUsuarios() {
+    public String teste() {
         var nome = "esse é nosso endpoint";
-        return usuarioService.findAllUsers();
+        return nome;
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Usuario>listarUsuarioUnico(@PathVariable(value = "id") long id) {
-        Usuario usuario = usuarioService.buscarPorId(id);
-        try{
-            return ResponseEntity.ok(usuario);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    // Buscar todos os usuários
+    @GetMapping("/all")
+    public ResponseEntity<List<Usuario>> getAllUsuarios() {
+        List<Usuario> usuarios = usuarioService.findAll();
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
 
-    @PostMapping()
-    public Usuario criarUsuario(@RequestBody Usuario usuario) {
-        return usuarioService.criarUsuario(usuario);
+    // Buscar um usuário por UID
+    @GetMapping("/{uid}")
+    public ResponseEntity<Usuario> getUsuarioById(@PathVariable String uid) {
+        Optional<Usuario> usuario = usuarioService.findByUid(uid);
+        return usuario.map(ResponseEntity::ok)
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping()
-    public Usuario atualizarUsuario(@RequestBody Usuario usuario) {
-        return usuarioService.atualizarUsuario(usuario);
+    // Criar um novo usuário
+    @PostMapping("/create")
+    public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
+        Usuario createdUsuario = usuarioService.save(usuario);
+        return new ResponseEntity<>(createdUsuario, HttpStatus.CREATED);
+    }
+
+    // Atualizar um usuário existente
+    @PutMapping("/update/{uid}")
+    public ResponseEntity<Usuario> updateUsuario(@PathVariable String uid, @RequestBody Usuario usuario) {
+        Optional<Usuario> updatedUsuario = usuarioService.update(uid, usuario);
+        return updatedUsuario.map(ResponseEntity::ok)
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    // Deletar um usuário por UID
+    @DeleteMapping("/delete/{uid}")
+    public ResponseEntity<Void> deleteUsuario(@PathVariable String uid) {
+        boolean isDeleted = usuarioService.deleteByUid(uid);
+        return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
