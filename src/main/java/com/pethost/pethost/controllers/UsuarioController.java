@@ -34,8 +34,8 @@ public class UsuarioController {
 
     // Buscar um usuário por UID
     @GetMapping("/{uid}")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable String uid) {
-        Optional<Usuario> usuario = usuarioService.findByUid(uid);
+    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
+        Optional<Usuario> usuario = usuarioService.findByUid(id);
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -49,16 +49,16 @@ public class UsuarioController {
 
     // Atualizar um usuário existente
     @PutMapping("/update/{uid}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable String uid, @RequestBody Usuario usuario) {
-        Optional<Usuario> updatedUsuario = usuarioService.update(uid, usuario);
+    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        Optional<Usuario> updatedUsuario = usuarioService.update(id, usuario);
         return updatedUsuario.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     // Deletar um usuário por UID
     @DeleteMapping("/delete/{uid}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable String uid) {
-        boolean isDeleted = usuarioService.deleteByUid(uid);
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
+        boolean isDeleted = usuarioService.deleteByUid(id);
         return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

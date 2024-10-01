@@ -1,6 +1,6 @@
 package com.pethost.pethost.controllers;
 
-import com.finampy.pethost.domain.Calendario;
+import com.pethost.pethost.domain.Calendario;
 import com.pethost.pethost.services.CalendarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,8 +27,8 @@ public class CalendarioController {
 
     @GetMapping("{uid}")
     @Operation(summary = "Buscar calendário por UID", description = "Responsável por buscar um único calendário pelo UID")
-    public ResponseEntity<Calendario> listarCalendarioUnico(@PathVariable(value = "uid") String uid) {
-        Calendario calendario = calendarioService.buscarPorUid(uid);
+    public ResponseEntity<Calendario> listarCalendarioUnico(@PathVariable(value = "id") Long id) {
+        Calendario calendario = calendarioService.buscarPorUid(id);
         if (calendario != null) {
             return ResponseEntity.ok(calendario);
         } else {
@@ -44,8 +44,8 @@ public class CalendarioController {
 
     @DeleteMapping("/{uid}")
     @Operation(summary = "Deletar calendário", description = "Responsável por deletar um calendário pelo UID")
-    public void deletarCalendario(@PathVariable(value = "uid") String uid) {
-        calendarioService.deletarCalendario(uid);
+    public void deletarCalendario(@PathVariable(value = "id") Long id) {
+        calendarioService.deletarCalendario(id);
     }
 
     @PutMapping("")

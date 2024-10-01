@@ -1,6 +1,6 @@
 package com.pethost.pethost.controllers;
 
-import com.finampy.pethost.domain.Reserva;
+import com.pethost.pethost.domain.Reserva;
 import com.pethost.pethost.services.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,8 +27,8 @@ public class ReservaController {
 
     @GetMapping("{uid}")
     @Operation(summary = "Buscar reserva por UID", description = "Responsável por buscar uma única reserva pelo UID")
-    public ResponseEntity<Reserva> listarReservaUnica(@PathVariable(value = "uid") String uid) {
-        Reserva reserva = reservaService.buscarPorUid(uid);
+    public ResponseEntity<Reserva> listarReservaUnica(@PathVariable(value = "id") Long id) {
+        Reserva reserva = reservaService.buscarPorUid(id);
         if (reserva != null) {
             return ResponseEntity.ok(reserva);
         } else {
@@ -44,7 +44,7 @@ public class ReservaController {
 
     @DeleteMapping("/{uid}")
     @Operation(summary = "Deletar reserva", description = "Responsável por deletar uma reserva pelo UID")
-    public void deletarReserva(@PathVariable(value = "uid") String uid) {
+    public void deletarReserva(@PathVariable(value = "uid") Long uid) {
         reservaService.deletarReserva(uid);
     }
 

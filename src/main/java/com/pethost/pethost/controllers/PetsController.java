@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/v1/pets")
@@ -27,9 +28,9 @@ public class PetsController {
 
     @GetMapping("{id}")
     public ResponseEntity<Pet> listarPetUnico(@PathVariable(value = "id") long id) {
-        Pet pet = petService.buscarPorId(id);
+        Optional<Pet> pet = petService.buscarPorId(id);
         if (pet != null) {
-            return ResponseEntity.ok(pet);
+            return ResponseEntity.ok(pet.get());
         } else {
             return ResponseEntity.notFound().build(); // Retorna 404 Not Found
         }

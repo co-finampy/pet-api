@@ -20,8 +20,8 @@ public class UsuarioService {
     }
 
     // Encontrar um usuário pelo UID
-    public Optional<Usuario> findByUid(String uid) {
-        return usuarioRepository.findByUid(uid);
+    public Optional<Usuario> findByUid(long id) {
+        return usuarioRepository.findById(id);
     }
 
     // Salvar um novo usuário
@@ -30,8 +30,8 @@ public class UsuarioService {
     }
 
     // Atualizar um usuário existente
-    public Optional<Usuario> update(String uid, Usuario updatedUsuario) {
-        return usuarioRepository.findByUid(uid).map(existingUsuario -> {
+    public Optional<Usuario> update(Long id, Usuario updatedUsuario) {
+        return usuarioRepository.findById(id).map(existingUsuario -> {
             existingUsuario.setNome(updatedUsuario.getNome());
             existingUsuario.setEmail(updatedUsuario.getEmail());
             existingUsuario.setSenha(updatedUsuario.getSenha());
@@ -39,15 +39,14 @@ public class UsuarioService {
             existingUsuario.setTipoUsuario(updatedUsuario.getTipoUsuario());
             existingUsuario.setEndereco(updatedUsuario.getEndereco());
             existingUsuario.setFotoUrl(updatedUsuario.getFotoUrl());
-            existingUsuario.setDatasDisponiveis(updatedUsuario.getDatasDisponiveis());
             existingUsuario.setPets(updatedUsuario.getPets());
             return usuarioRepository.save(existingUsuario);
         });
     }
 
     // Deletar um usuário pelo UID
-    public boolean deleteByUid(String uid) {
-        return usuarioRepository.findByUid(uid).map(usuario -> {
+    public boolean deleteByUid(Long id) {
+        return usuarioRepository.findById(id).map(usuario -> {
             usuarioRepository.delete(usuario);
             return true;
         }).orElse(false);

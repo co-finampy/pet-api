@@ -1,14 +1,11 @@
 package com.pethost.pethost.domain;
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
-
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
 
 @Data
 @NoArgsConstructor
@@ -17,11 +14,10 @@ import java.util.List;
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "uid", unique = true, nullable = false)
-    private String uid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private long id;
 
     @Column(name = "nome", nullable = false)
     private String nome;
@@ -44,14 +40,9 @@ public class Usuario implements Serializable {
     @Column(name = "foto_url")
     private String fotoUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "datas_disponiveis_id")
-    private com.finampy.pethost.domain.Calendario datasDisponiveis;
-
     @Column(name = "token")
     private String token;
 
-    @OneToMany
-    @JoinColumn(name = "usuario_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "usuario")
     private List<Pet> pets;
 }

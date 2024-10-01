@@ -1,6 +1,6 @@
 package com.pethost.pethost.services;
 
-import com.finampy.pethost.domain.Reserva;
+import com.pethost.pethost.domain.Reserva;
 import com.pethost.pethost.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,14 +14,14 @@ public class ReservaService {
     @Autowired
     private ReservaRepository reservaRepository;
 
-    // Método para listar todas as reservas
+
     public List<Reserva> findAllReservas() {
         return reservaRepository.findAll();
     }
 
-    // Método para buscar uma reserva pelo UID
-    public Reserva buscarPorUid(String uid) {
-        Optional<Reserva> reserva = reservaRepository.findById(uid);
+
+    public Reserva buscarPorUid(Long id) {
+        Optional<Reserva> reserva = reservaRepository.findById(id);
         return reserva.orElse(null);  // Retorna a reserva ou null se não for encontrada
     }
 
@@ -31,8 +31,8 @@ public class ReservaService {
     }
 
     // Método para deletar uma reserva
-    public void deletarReserva(String uid) {
-        reservaRepository.deleteById(uid);
+    public void deletarReserva(Long id) {
+        reservaRepository.deleteById(id);
     }
 
     // Método para atualizar uma reserva

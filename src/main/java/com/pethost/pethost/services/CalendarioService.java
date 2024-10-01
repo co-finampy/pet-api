@@ -1,6 +1,6 @@
 package com.pethost.pethost.services;
 
-import com.finampy.pethost.domain.Calendario;
+import com.pethost.pethost.domain.Calendario;
 import com.pethost.pethost.repositories.CalendarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +20,8 @@ public class CalendarioService {
     }
 
     // Método para buscar um calendário pelo UID
-    public Calendario buscarPorUid(String uid) {
-        Optional<Calendario> calendario = calendarioRepository.findById(uid);
+    public Calendario buscarPorUid(Long id) {
+        Optional<Calendario> calendario = calendarioRepository.findById(id);
         return calendario.orElse(null);  // Retorna o calendário ou null se não for encontrado
     }
 
@@ -31,8 +31,8 @@ public class CalendarioService {
     }
 
     // Método para deletar um calendário
-    public void deletarCalendario(String uid) {
-        calendarioRepository.deleteById(uid);
+    public void deletarCalendario(Long id) {
+        calendarioRepository.deleteById(id);
     }
 
     // Método para atualizar um calendário
