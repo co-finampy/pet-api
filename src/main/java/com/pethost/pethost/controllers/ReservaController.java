@@ -1,6 +1,6 @@
 package com.pethost.pethost.controllers;
 
-import com.finampy.pethost.domain.Reserva;
+import com.pethost.pethost.domain.Reserva; // Ajuste o pacote de importação
 import com.pethost.pethost.services.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +17,7 @@ import java.util.List;
 public class ReservaController {
 
     @Autowired
-    ReservaService reservaService;
+    private ReservaService reservaService;
 
     @GetMapping("")
     @Operation(summary = "Listar reservas", description = "Responsável por listar todas as reservas")
@@ -25,7 +25,7 @@ public class ReservaController {
         return reservaService.findAllReservas();
     }
 
-    @GetMapping("{uid}")
+    @GetMapping("/{uid}")
     @Operation(summary = "Buscar reserva por UID", description = "Responsável por buscar uma única reserva pelo UID")
     public ResponseEntity<Reserva> listarReservaUnica(@PathVariable(value = "uid") String uid) {
         Reserva reserva = reservaService.buscarPorUid(uid);

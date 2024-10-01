@@ -1,6 +1,6 @@
 package com.pethost.pethost.services;
 
-import com.finampy.pethost.domain.Calendario;
+import com.pethost.pethost.domain.Calendario; // Ajuste o pacote de importação
 import com.pethost.pethost.repositories.CalendarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
