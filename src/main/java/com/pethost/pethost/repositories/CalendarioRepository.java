@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface CalendarioRepository extends JpaRepository<Calendario, String> {
-    Optional<Calendario> findByUid(String uid);
+    Optional<Calendario> findByUid(Long uid);
 }

@@ -36,19 +36,19 @@ public class ReservaController {
         }
     }
 
-    @PostMapping("")
+    @PostMapping("/criar")
     @Operation(summary = "Criar uma nova reserva", description = "Responsável por criar uma nova reserva")
     public Reserva criarReserva(@RequestBody Reserva reserva) {
         return reservaService.criarReserva(reserva);
     }
 
-    @DeleteMapping("/{uid}")
+    @DeleteMapping("/deletar/{uid}")
     @Operation(summary = "Deletar reserva", description = "Responsável por deletar uma reserva pelo UID")
     public void deletarReserva(@PathVariable(value = "uid") String uid) {
         reservaService.deletarReserva(uid);
     }
 
-    @PutMapping("")
+    @PutMapping("/atualizar")
     @Operation(summary = "Atualizar reserva", description = "Responsável por atualizar uma reserva existente")
     public Reserva atualizarReserva(@RequestBody Reserva reserva) {
         return reservaService.atualizarReserva(reserva);
