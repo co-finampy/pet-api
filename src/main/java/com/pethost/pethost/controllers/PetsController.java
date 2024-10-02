@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/v1/pets")
-@Tag(name = "Rotas Login")
+@Tag(name = "Rotas de Pets")
 @CrossOrigin(origins = "*")
 public class PetsController {
 
