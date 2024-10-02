@@ -27,7 +27,7 @@ public class UsuarioService {
     }
 
     // Encontrar um usuário pelo UID
-    public Usuario findByUid(Long uid) {
+    public Usuario findByUid(String uid) {
         return usuarioRepository.findById(uid).orElseThrow(UsuarioNotFoundException::new);
     }
 
@@ -57,7 +57,7 @@ public class UsuarioService {
     }
 
     // Atualizar um usuário existente
-    public Usuario update(Long uid, Usuario updatedUsuario) {
+    public Usuario update(String uid, Usuario updatedUsuario) {
         Usuario existingUsuario = findByUid(uid); // Lança exceção se o usuário não for encontrado
 
         if (updatedUsuario.getNome() == null || updatedUsuario.getNome().isEmpty()) {
@@ -80,7 +80,7 @@ public class UsuarioService {
     }
 
     // Deletar um usuário pelo UID
-    public boolean deleteByUid(Long uid) {
+    public boolean deleteByUid(String uid) {
         Usuario usuario = findByUid(uid); // Lança exceção se o usuário não for encontrado
         usuarioRepository.delete(usuario);
         return true;
