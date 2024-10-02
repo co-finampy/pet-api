@@ -39,7 +39,7 @@ public class Usuario implements Serializable, UserDetails {
     @Column(name = "telefone")
     private String telefone;
 
-    @Column(name = "tipo_usuario", nullable = false)
+    @Column(name = "tipo_usuario")
     private String tipoUsuario;
 
     @Column(name = "endereco")
