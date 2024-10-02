@@ -27,7 +27,7 @@ public class CalendarioController {
 
     @GetMapping("/{uid}")
     @Operation(summary = "Buscar calendário por UID", description = "Responsável por buscar um único calendário pelo UID")
-    public ResponseEntity<Calendario> listarCalendarioUnico(@PathVariable(value = "uid") String uid) {
+    public ResponseEntity<Calendario> listarCalendarioUnico(@PathVariable(value = "uid") Long uid) {
         Calendario calendario = calendarioService.buscarPorUid(uid);
         if (calendario != null) {
             return ResponseEntity.ok(calendario);
@@ -44,7 +44,7 @@ public class CalendarioController {
 
     @DeleteMapping("/{uid}")
     @Operation(summary = "Deletar calendário", description = "Responsável por deletar um calendário pelo UID")
-    public void deletarCalendario(@PathVariable(value = "uid") String uid) {
+    public void deletarCalendario(@PathVariable(value = "uid") Long uid) {
         calendarioService.deletarCalendario(uid);
     }
 

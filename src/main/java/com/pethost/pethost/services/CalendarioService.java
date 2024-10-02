@@ -22,8 +22,9 @@ public class CalendarioService {
     }
 
     // Método para buscar um calendário pelo UID
-    public Calendario buscarPorUid(String uid) {
-        Optional<Calendario> calendario = calendarioRepository.findById(uid);
+    public Calendario buscarPorUid(Long uid) {
+        String uidAsString = String.valueOf(uid);
+        Optional<Calendario> calendario = calendarioRepository.findById(uidAsString);
         if (calendario.isEmpty()) {
             throw new CalendarioNotFoundException(); // Lança exceção se o calendário não for encontrado
         }
@@ -40,16 +41,18 @@ public class CalendarioService {
     }
 
     // Método para deletar um calendário
-    public void deletarCalendario(String uid) {
-        if (!calendarioRepository.existsById(uid)) {
+    public void deletarCalendario(Long uid) {
+        String uidAsString = String.valueOf(uid);
+        if (!calendarioRepository.existsById(uidAsString)) {
             throw new CalendarioNotFoundException(); // Lança exceção se o calendário não existir
         }
-        calendarioRepository.deleteById(uid);
+        calendarioRepository.deleteById(uidAsString);
     }
 
     // Método para atualizar um calendário
     public Calendario atualizarCalendario(Calendario calendario) {
-        if (!calendarioRepository.existsById(calendario.getUid())) {
+        String uidAsString = String.valueOf(calendario.getUid()); // Converte o ID para String
+        if (!calendarioRepository.existsById(uidAsString)) {
             throw new CalendarioNotFoundException(); // Lança exceção se o calendário não existir
         }
         return calendarioRepository.save(calendario);

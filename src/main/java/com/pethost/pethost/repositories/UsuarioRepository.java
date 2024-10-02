@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    // Método personalizado para encontrar usuário por UID
-    Optional<Usuario> findByUid(String uid);
+    Optional<Usuario> findByEmail(String email);
+
 }
