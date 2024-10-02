@@ -32,9 +32,9 @@ public class UsuarioController {
     }
 
     // Buscar um usuário por UID
-    @GetMapping("/{uid}")
+    @GetMapping("/buscar/{uid}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable String uid) {
-        Optional<Usuario> usuario = usuarioService.findByUid(uid);
+        Optional<Usuario> usuario = Optional.ofNullable(usuarioService.findByUid(uid));
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -49,7 +49,7 @@ public class UsuarioController {
     // Atualizar um usuário existente
     @PutMapping("/atualizar/{uid}")
     public ResponseEntity<Usuario> atualizarUsuario(@PathVariable String uid, @RequestBody Usuario usuario) {
-        Optional<Usuario> updatedUsuario = usuarioService.update(uid, usuario);
+        Optional<Usuario> updatedUsuario = Optional.ofNullable(usuarioService.update(uid, usuario));
         return updatedUsuario.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
