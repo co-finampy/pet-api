@@ -30,11 +30,12 @@ public class PetService {
     }
 
     // Método para deletar um pet
-    public void deletarPet(long id) {
+    public boolean deletarPet(long id) {
         if (!petRepository.existsById(id)) {
             throw new PetNotFoundException(); // Lança exceção se o pet não existir
         }
         petRepository.deleteById(id);
+        return false;
     }
 
     // Método para atualizar um pet
