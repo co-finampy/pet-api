@@ -101,16 +101,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidLoginException.class)
-    public ResponseEntity<String> handleInvalidLogin(InvalidLoginException ex) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ex.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleInvalidLogin(InvalidLoginException ex) {
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .nome("Login invalido")
+                .codStatus(HttpStatus.NOT_FOUND.value())
+                .mensagem(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("Erro de autenticação: credenciais inválidas.");
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .nome("Erro de autenticação: credenciais inválidas")
+                .codStatus(HttpStatus.NOT_FOUND.value())
+                .mensagem(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
     }
 }
