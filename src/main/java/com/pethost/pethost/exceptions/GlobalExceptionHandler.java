@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -46,5 +48,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceConflictException.class)
     public ResponseEntity<String> handleResourceConflictException(ResourceConflictException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidLoginException.class)
+    public ResponseEntity<String> handleInvalidLogin(InvalidLoginException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Erro de autenticação: credenciais inválidas.");
     }
 }
