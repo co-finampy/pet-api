@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -96,5 +98,25 @@ public class GlobalExceptionHandler {
                 .mensagem(ex.getMessage())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidLoginException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidLogin(InvalidLoginException ex) {
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .nome("Login invalido")
+                .codStatus(HttpStatus.NOT_FOUND.value())
+                .mensagem(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .nome("Erro de autenticação: credenciais inválidas")
+                .codStatus(HttpStatus.NOT_FOUND.value())
+                .mensagem(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
     }
 }
