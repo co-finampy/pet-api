@@ -31,8 +31,8 @@ public class UsuarioController {
     // Buscar um usuário por UID
     @GetMapping("/buscar/{uid}")
     @Operation(summary = "Buscar usuario por ID", description = "Responsável por buscar um unico usuario pelo ID")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable String uid) {
-        Optional<Usuario> usuario = Optional.ofNullable(usuarioService.findByUid(uid));
+    public ResponseEntity<Usuario> getUsuarioById(@PathVariable String email) {
+        Optional<Usuario> usuario = Optional.ofNullable(usuarioService.findByEmail(email));
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
