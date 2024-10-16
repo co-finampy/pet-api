@@ -28,10 +28,10 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
 
-    // Buscar um usuário por UID
-    @GetMapping("/buscar/{uid}")
-    @Operation(summary = "Buscar usuario por ID", description = "Responsável por buscar um unico usuario pelo ID")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable String email) {
+    // Buscar um usuário por email
+    @GetMapping("/buscar/{email}")
+    @Operation(summary = "Buscar usuario por Email", description = "Responsável por buscar um unico usuario pelo Email")
+    public ResponseEntity<Usuario> getUsuarioByEmail(@PathVariable String email) {
         Optional<Usuario> usuario = Optional.ofNullable(usuarioService.findByEmail(email));
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
