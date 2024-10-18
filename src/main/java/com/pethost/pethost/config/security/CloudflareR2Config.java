@@ -14,13 +14,13 @@ public class CloudflareR2Config {
     @Bean
     public AmazonS3 amazonS3() {
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                "e2513d2df84f6326d07319b84464bb7b", // Access Key ID
-                "sQasHAvsbeyTNOSEDDTck5Qy4UU8exlX3Lc2Eq1T" // Secret Access Key
+                "AKIAVVZPCLWLGBJLXZGC", // Access Key ID
+                "vGw0gkiIRf8VUmHiZeF2ryErGDw5WLnOZuhIsZU" // Secret Access Key
         );
 
         return AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
-                        "https://e2513d2df84f6326d07319b84464bb7b.r2.cloudflarestorage.com/pethost", "auto")) // Endpoint
+                        "https://e2513d2df84f6326d07319b84464bb7b.r2.cloudflarestorage.com", "auto")) // Substitua pelo seu endpoint correto
                 .withPathStyleAccessEnabled(true)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();

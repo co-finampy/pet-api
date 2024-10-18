@@ -5,13 +5,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-public class JwtAutenticationEntryPoint implements AuthenticationEntryPoint {
+@Component
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.setHeader("www-authenticate", "Bearer realm='/auth/login'");
-        response.sendError(401);
+        // Define o header "WWW-Authenticate" para JWT com informações sobre o realm
+        response.setHeader("WWW-Authenticate", "Bearer realm='/auth/login'");
+
+        // Envia a resposta com o status 401 e uma mensagem explicativa no corpo
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Erro: Acesso negado. Token JWT ausente ou inválido.");
     }
 }
