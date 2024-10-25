@@ -52,6 +52,10 @@ public class Usuario implements Serializable, UserDetails {
     @JoinColumn(name = "datas_disponiveis_id")
     private Calendario datasDisponiveis;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Pet> pets;
+
+
     @Column(name = "token")
     private String token;
 

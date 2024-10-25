@@ -21,31 +21,28 @@ public class ApplicationConfiguration {
     private final UsuarioRepository usuarioRepository;
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> usuarioRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+    UserDetailsService userDetailsService() {
+        return username -> {
+            return usuarioRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        };
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 }

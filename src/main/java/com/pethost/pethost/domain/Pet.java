@@ -1,7 +1,6 @@
 package com.pethost.pethost.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -40,5 +39,9 @@ public class Pet implements Serializable {
     private String foto;
 
     private LocalDateTime criadoEm;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
 }
