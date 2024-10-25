@@ -14,13 +14,13 @@ public class CloudflareR2Config {
     @Bean
     public AmazonS3 amazonS3() {
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-                "AWS_ACCESS_KEY_ID", // Access Key ID
-                "AWS_SECRET_ACCESS_KEY" // Secret Access Key
+                "AKIAVVZPCLWLGBJLXZGC", // Access Key ID
+                "vGw0gkiIRf8VUmHiZeF2ryErGDw5WLnOZuhIsZUH" // Secret Access Key
         );
 
         return AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
-                        "", "")) // Substitua pelo seu endpoint e região
+                        "https://s3.amazonaws.com", "us-east-2")) // Substitua pelo seu endpoint e região
                 .withPathStyleAccessEnabled(true)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
