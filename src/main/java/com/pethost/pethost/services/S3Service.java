@@ -30,7 +30,6 @@ public class S3Service {
         String fileName = file.getOriginalFilename();
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize()); // Definindo o tamanho do arquivo
-
         // Criando a solicitação de upload
         PutObjectRequest request = new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata);
         s3Client.putObject(request); // Fazendo o upload do arquivo
