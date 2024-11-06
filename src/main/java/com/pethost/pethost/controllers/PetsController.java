@@ -61,7 +61,7 @@ public class PetsController {
 
     // Criar um novo pet
     @PostMapping("/criar")
-    @Operation(summary = "Buscar pet por ID", description = "Responsável por buscar um único pet pelo ID")
+    @Operation(summary = "Criar pet", description = "Responsável por Criar um pet associado a um usuario")
     public ResponseEntity<Pet> criarPet(@RequestBody CriarPetRequestDto criarPetRequestDto) {
         // Converte CriarPetRequestDto para Pet
         Pet pet = Pet.builder()
