@@ -1,6 +1,9 @@
 package com.pethost.pethost.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +14,9 @@ import java.util.Date;
 @Entity
 @Table(name = "TB_PETS")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Pet implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,8 +45,9 @@ public class Pet implements Serializable {
 
     private LocalDateTime criadoEm;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario;
 
 }
