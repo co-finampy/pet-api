@@ -1,7 +1,7 @@
 package com.pethost.pethost.controllers;
 
 import com.pethost.pethost.domain.Reserva;
-import com.pethost.pethost.dto.ReservaResponseDto;
+import com.pethost.pethost.dtos.ReservaResponseDto;
 import com.pethost.pethost.services.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

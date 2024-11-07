@@ -1,7 +1,7 @@
 package com.pethost.pethost.services;
 
 import com.pethost.pethost.domain.Reserva;
-import com.pethost.pethost.dto.ReservaResponseDto;
+import com.pethost.pethost.dtos.ReservaResponseDto;
 import com.pethost.pethost.exceptions.ReservaNotFoundException;
 import com.pethost.pethost.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +51,8 @@ public class ReservaService {
         return reservas.stream()
                 .map(reserva -> new ReservaResponseDto(
                         reserva.getUid(),
-                        reserva.getUidClient(),
-                        reserva.getUidAnfitriao(),
+                        reserva.getUsuarioClient().getUid(),
+                        reserva.getUsuarioAnfitriao().getUid(),
                         reserva.getUidPet(),
                         reserva.getDataEntrada(),
                         reserva.getDataSaida(),

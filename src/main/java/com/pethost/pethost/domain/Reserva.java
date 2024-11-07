@@ -22,12 +22,6 @@ public class Reserva implements Serializable {
     private String uid;
 
     @Column(length = 36, nullable = false)
-    private Long uidClient;
-
-    @Column(length = 36, nullable = false)
-    private Long uidAnfitriao;
-
-    @Column(length = 36, nullable = false)
     private String uidPet;
 
     @Column(nullable = false)
@@ -48,8 +42,12 @@ public class Reserva implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuarioClient;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuarioAnfitriao;
+
 }

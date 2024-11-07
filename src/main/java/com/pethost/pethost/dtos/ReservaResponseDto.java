@@ -15,7 +15,7 @@ public class ReservaResponseDto {
     private String status;
     private LocalDateTime createdAt;
 
-    public ReservaResponseDto(String uid, Long uidClient, Long uidAnfitriao, String uidPet,
+    public ReservaResponseDto(String uid, String uidClient, String uidAnfitriao, String uidPet,
                               LocalDateTime dataEntrada, LocalDateTime dataSaida, String tipoReserva,
                               String valor, String status, LocalDateTime createdAt) {
         this.uid = uid;
