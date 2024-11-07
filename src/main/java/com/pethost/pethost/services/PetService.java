@@ -21,6 +21,10 @@ public class PetService {
         return petRepository.findAll();
     }
 
+    public List<Pet> findAllPetsByUid(String uid) {
+        return petRepository.findByOwnerUid(uid);
+    }
+
     // Método para criar um novo pet
     public Pet criarPet(Pet pet) {
         if (pet.getNomePet() == null || pet.getNomePet().isEmpty()) {
