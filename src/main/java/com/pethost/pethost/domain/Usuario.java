@@ -55,7 +55,6 @@ public class Usuario implements Serializable, UserDetails {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pet> pets;
 
-
     @Column(name = "token")
     private String token;
 
