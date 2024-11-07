@@ -1,5 +1,6 @@
 package com.pethost.pethost.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,10 +50,12 @@ public class Reserva implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "usuarioClient_id")
+    @JsonIgnore
     private Usuario usuarioClient;
 
     @ManyToOne
     @JoinColumn(name = "usuarioAnfitriao_id")
+    @JsonIgnore
     private Usuario usuarioAnfitriao;
 
 }
