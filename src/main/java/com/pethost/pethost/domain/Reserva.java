@@ -2,6 +2,7 @@ package com.pethost.pethost.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "TB_RESERVAS")
@@ -42,12 +44,15 @@ public class Reserva implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(length = 500, nullable = false)
+    private String observacoes;
+
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuarioClient_id")
     private Usuario usuarioClient;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuarioAnfitriao_id")
     private Usuario usuarioAnfitriao;
 
 }

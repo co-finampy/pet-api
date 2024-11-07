@@ -43,8 +43,8 @@ public class ReservaService {
         return reservaRepository.save(reserva);
     }
 
-    public List<ReservaResponseDto> buscarReservasPorUserUid(Long uidClient) {
-        List<Reserva> reservas = reservaRepository.findByUidClient(uidClient);
+    public List<ReservaResponseDto> buscarReservasPorUserUid(String uid) {
+        List<Reserva> reservas = reservaRepository.findByUidClient(uid);
         if (reservas.isEmpty()) {
             throw new ReservaNotFoundException();
         }
@@ -54,12 +54,12 @@ public class ReservaService {
                         reserva.getUsuarioClient().getUid(),
                         reserva.getUsuarioAnfitriao().getUid(),
                         reserva.getUidPet(),
-                        reserva.getDataEntrada(),
-                        reserva.getDataSaida(),
+                        reserva.getDataEntrada().toString(),
+                        reserva.getDataSaida().toString(),
                         reserva.getTipoReserva(),
                         reserva.getValor(),
                         reserva.getStatus(),
-                        reserva.getCreatedAt()))
+                        reserva.getCreatedAt().toString()))
                 .collect(Collectors.toList());
     }
 }

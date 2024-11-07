@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservaResponseDto {
+public class CriarReservaRequestDto {
 
-    private String uid;
     private String uidClient;
     private String uidAnfitriao;
     private String uidPet;
@@ -21,5 +20,8 @@ public class ReservaResponseDto {
     private String valor;
     private String status;
     private String createdAt;
+    private String observacoes;
+
+
 
 }
