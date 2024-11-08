@@ -16,19 +16,23 @@ public class ReservaService {
     @Autowired
     private ReservaRepository reservaRepository;
 
+    // Método para buscar todas as reservas
     public List<Reserva> findAllReservas() {
         return reservaRepository.findAll();
     }
 
+    // Método para buscar uma reserva pelo UID
     public Reserva buscarPorUid(String uid) {
         return reservaRepository.findById(uid)
                 .orElseThrow(ReservaNotFoundException::new);
     }
 
+    // Método para criar uma nova reserva
     public Reserva criarReserva(Reserva reserva) {
         return reservaRepository.save(reserva);
     }
 
+    // Método para deletar uma reserva pelo UID
     public void deletarReserva(String uid) {
         if (!reservaRepository.existsById(uid)) {
             throw new ReservaNotFoundException();
@@ -36,6 +40,7 @@ public class ReservaService {
         reservaRepository.deleteById(uid);
     }
 
+    // Método para atualizar uma reserva
     public Reserva atualizarReserva(Reserva reserva) {
         if (!reservaRepository.existsById(reserva.getUid())) {
             throw new ReservaNotFoundException();
@@ -43,6 +48,7 @@ public class ReservaService {
         return reservaRepository.save(reserva);
     }
 
+    // Método para buscar reservas de um usuário por seu UID
     public List<ReservaResponseDto> buscarReservasPorUserUid(String uid) {
         List<Reserva> reservas = reservaRepository.findByUidClient(uid);
         if (reservas.isEmpty()) {
@@ -58,7 +64,7 @@ public class ReservaService {
                         reserva.getDataSaida().toString(),
                         reserva.getTipoReserva(),
                         reserva.getValor(),
-                        reserva.getStatus(),
+                        reserva.getStatus(),  // O status aqui é uma String
                         reserva.getCreatedAt().toString()))
                 .collect(Collectors.toList());
     }

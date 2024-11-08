@@ -1,88 +1,93 @@
 package com.pethost.pethost.controllers;
 
 import com.pethost.pethost.domain.Reserva;
-import com.pethost.pethost.domain.Usuario;
-import com.pethost.pethost.dtos.CriarReservaRequestDto;
-import com.pethost.pethost.dtos.ReservaResponseDto;
-import com.pethost.pethost.services.ReservaService;
-import com.pethost.pethost.services.UsuarioService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.pethost.pethost.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/v1/reservas")
-@Tag(name = "Rotas Reserva")
-@CrossOrigin(origins = "*")
+@RequestMapping("/v1/reservas")
 public class ReservaController {
 
     @Autowired
-    private ReservaService reservaService;
+    private ReservaRepository reservaRepository;
 
-    @Autowired
-    private UsuarioService usuarioService;
-
-
-    @GetMapping("")
-    @Operation(summary = "Listar todas as reservas", description = "Responsável por listar todas as reservas")
-    public ResponseEntity<List<Reserva>> listarReservas() {
-        return new ResponseEntity<>(reservaService.findAllReservas(), HttpStatus.OK);
-    }
-
-    @GetMapping("/buscar/{id}")
-    @Operation(summary = "Buscar reserva por UID", description = "Responsável por buscar uma única reserva pelo UID")
-    public ResponseEntity<Reserva> listarReservaUnica(@PathVariable(value = "uid") String uid) {
-        Reserva reserva = reservaService.buscarPorUid(uid);
-        return ResponseEntity.ok(reserva);
-    }
-
-    @GetMapping("/{uid}/listar")
-    @Operation(summary = "Listar reservas por UID do usuário", description = "Responsável por listar todas as reservas de um usuário específico pelo UID do cliente")
-    public ResponseEntity<List<ReservaResponseDto>> listarReservasPorUserUid(@PathVariable(value = "uid") String uid) {
-        List<ReservaResponseDto> reservas = reservaService.buscarReservasPorUserUid(uid);
-        return new ResponseEntity<>(reservas, HttpStatus.OK);
-    }
-
+    // Criar nova reserva
     @PostMapping("/criar")
-    @Operation(summary = "Criar uma nova reserva", description = "Responsável por criar uma nova reserva")
-    public ResponseEntity<Reserva> criarReserva(@RequestBody CriarReservaRequestDto request) {
-        Usuario usuarioClient = usuarioService.findByUid(request.getUidClient());
-        Usuario usuarioAnfitriao = usuarioService.findByUid(request.getUidAnfitriao());
+    public ResponseEntity<Reserva> criarReserva(@RequestBody Reserva reserva) {
+        try {
+            if (reserva.getUid() == null || reserva.getUid().isEmpty()) {
+                reserva.setUid(UUID.randomUUID().toString());
+            }
 
-
-        Reserva reserva = Reserva.builder()
-                .usuarioClient(usuarioClient)
-                .usuarioAnfitriao(usuarioAnfitriao)
-                .uidPet(request.getUidPet())
-                .dataEntrada(LocalDateTime.parse(request.getDataEntrada()))
-                .dataSaida(LocalDateTime.parse(request.getDataSaida()))
-                .tipoReserva(request.getTipoReserva())
-                .valor(request.getValor())
-                .status(request.getStatus())
-                .createdAt(LocalDateTime.parse(request.getCreatedAt()))
-                .observacoes(request.getObservacoes())
-                .build();
-
-
-        return new ResponseEntity<>(reservaService.criarReserva(reserva), HttpStatus.CREATED);
+            Reserva novaReserva = reservaRepository.save(reserva);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novaReserva);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
     }
 
+    // Buscar reserva por UID
+    @GetMapping("/{uid}")
+    public ResponseEntity<Object> buscarReservaPorUid(@PathVariable String uid) {
+        Optional<Reserva> reserva = reservaRepository.findById(uid);
+
+        if (reserva.isPresent()) {
+            return ResponseEntity.ok(reserva.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Reserva não encontrada");
+        }
+    }
+
+    // Listar todas as reservas
+    @GetMapping("/todas")
+    public ResponseEntity<List<Reserva>> listarReservas() {
+        List<Reserva> reservas = reservaRepository.findAll();
+        return ResponseEntity.ok(reservas);
+    }
+
+    // Atualizar uma reserva existente
+    @PutMapping("/atualizar/{uid}")
+    public ResponseEntity<Object> atualizarReserva(@PathVariable String uid, @RequestBody Reserva reservaAtualizada) {
+        Optional<Reserva> reservaExistente = reservaRepository.findById(uid);
+
+        if (reservaExistente.isPresent()) {
+            Reserva reserva = reservaExistente.get();
+            reserva.setUidPet(reservaAtualizada.getUidPet());
+            reserva.setDataEntrada(reservaAtualizada.getDataEntrada());
+            reserva.setDataSaida(reservaAtualizada.getDataSaida());
+            reserva.setTipoReserva(reservaAtualizada.getTipoReserva());
+            reserva.setValor(reservaAtualizada.getValor());
+            reserva.setStatus(reservaAtualizada.getStatus());
+            reserva.setObservacoes(reservaAtualizada.getObservacoes());
+
+            Reserva reservaSalva = reservaRepository.save(reserva);
+            return ResponseEntity.ok(reservaSalva);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Reserva não encontrada");
+        }
+    }
+
+    // Deletar uma reserva
     @DeleteMapping("/deletar/{uid}")
-    @Operation(summary = "Deletar uma reserva", description = "Responsável por deletar uma reserva pelo UID")
-    public ResponseEntity<Void> deletarReserva(@PathVariable(value = "uid") String uid) {
-        reservaService.deletarReserva(uid);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+    public ResponseEntity<String> deletarReserva(@PathVariable String uid) {
+        Optional<Reserva> reserva = reservaRepository.findById(uid);
 
-    @PutMapping("/atualizar")
-    @Operation(summary = "Atualizar uma reserva", description = "Responsável por atualizar uma reserva existente")
-    public ResponseEntity<Reserva> atualizarReserva(@RequestBody Reserva reserva) {
-        return new ResponseEntity<>(reservaService.atualizarReserva(reserva), HttpStatus.OK);
+        if (reserva.isPresent()) {
+            reservaRepository.deleteById(uid);
+            return ResponseEntity.ok("Reserva deletada com sucesso");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Reserva não encontrada");
+        }
     }
 }

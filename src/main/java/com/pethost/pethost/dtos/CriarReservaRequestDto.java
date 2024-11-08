@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CriarReservaRequestDto {
 
+    private String uid;              // Campo para o UID fornecido manualmente
     private String uidClient;
     private String uidAnfitriao;
     private String uidPet;
@@ -21,7 +22,4 @@ public class CriarReservaRequestDto {
     private String status;
     private String createdAt;
     private String observacoes;
-
-
-
 }

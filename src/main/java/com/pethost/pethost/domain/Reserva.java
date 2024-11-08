@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -39,7 +40,7 @@ public class Reserva implements Serializable {
     @Column(nullable = false)
     private String valor;
 
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private String status;
 
     @Column(nullable = false)
@@ -58,4 +59,13 @@ public class Reserva implements Serializable {
     @JsonIgnore
     private Usuario usuarioAnfitriao;
 
+    @PrePersist
+    public void prePersist() {
+        if (this.uid == null || this.uid.isEmpty()) {
+            this.uid = UUID.randomUUID().toString();
+        }
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 }

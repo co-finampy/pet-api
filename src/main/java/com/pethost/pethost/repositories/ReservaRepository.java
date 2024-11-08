@@ -12,8 +12,9 @@ import java.util.List;
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, String> {
 
-    // Método para encontrar reservas por UID do cliente
-    @Query("SELECT p FROM Reserva p WHERE p.usuarioClient.uid = :uid")
+    @Query("SELECT r FROM Reserva r WHERE r.usuarioClient.uid = :uid")
     List<Reserva> findByUidClient(@Param("uid") String uid);
-
 }
+
+
+
