@@ -24,18 +24,19 @@ public class ReservaService {
     // Método para buscar uma reserva pelo UID
     public Reserva buscarPorUid(String uid) {
         return reservaRepository.findById(uid)
-                .orElseThrow(ReservaNotFoundException::new);
+                .orElseThrow(() -> new ReservaNotFoundException("Reserva não encontrada para o UID: " + uid));
     }
 
     // Método para criar uma nova reserva
     public Reserva criarReserva(Reserva reserva) {
+        // Aqui você pode adicionar lógica extra se necessário antes de salvar a reserva
         return reservaRepository.save(reserva);
     }
 
     // Método para deletar uma reserva pelo UID
     public void deletarReserva(String uid) {
         if (!reservaRepository.existsById(uid)) {
-            throw new ReservaNotFoundException();
+            throw new ReservaNotFoundException("Reserva não encontrada para o UID: " + uid);
         }
         reservaRepository.deleteById(uid);
     }
@@ -43,7 +44,7 @@ public class ReservaService {
     // Método para atualizar uma reserva
     public Reserva atualizarReserva(Reserva reserva) {
         if (!reservaRepository.existsById(reserva.getUid())) {
-            throw new ReservaNotFoundException();
+            throw new ReservaNotFoundException("Reserva não encontrada para o UID: " + reserva.getUid());
         }
         return reservaRepository.save(reserva);
     }
@@ -52,7 +53,7 @@ public class ReservaService {
     public List<ReservaResponseDto> buscarReservasPorUserUid(String uid) {
         List<Reserva> reservas = reservaRepository.findByUidClient(uid);
         if (reservas.isEmpty()) {
-            throw new ReservaNotFoundException();
+            throw new ReservaNotFoundException("Nenhuma reserva encontrada para o usuário com UID: " + uid);
         }
         return reservas.stream()
                 .map(reserva -> new ReservaResponseDto(
@@ -64,7 +65,7 @@ public class ReservaService {
                         reserva.getDataSaida().toString(),
                         reserva.getTipoReserva(),
                         reserva.getValor(),
-                        reserva.getStatus(),  // O status aqui é uma String
+                        reserva.getStatus(),
                         reserva.getCreatedAt().toString()))
                 .collect(Collectors.toList());
     }

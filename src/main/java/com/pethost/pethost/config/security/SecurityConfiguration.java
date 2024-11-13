@@ -20,25 +20,24 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private AuthenticationProvider authenticationProvider;
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationProvider authenticationProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.and())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
-                ).sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                ).addFilterBefore(
-                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
-                ).authenticationProvider(authenticationProvider)
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(authenticationProvider)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new JwtAutenticationEntryPoint()))
                 .build();
     }
@@ -48,7 +47,9 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("authorization", "content-type"));
+        configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-requested-with"));
+        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true); // Permitir envio de credenciais (cookies)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
