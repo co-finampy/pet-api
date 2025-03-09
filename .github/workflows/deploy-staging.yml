@@ -3,9 +3,6 @@ name: Deploy Spring Boot no Railway
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
       - main  # Ou a branch de deploy
 
 jobs:
