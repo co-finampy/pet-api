@@ -1,8 +1,8 @@
 package com.pethost.pethost.controllers;
 
 import com.pethost.pethost.domain.Pet;
-import com.pethost.pethost.domain.Usuario;
 import com.pethost.pethost.dtos.CriarPetRequestDto;
+import com.pethost.pethost.dtos.ListarPetsResponseDto;
 import com.pethost.pethost.services.PetService;
 import com.pethost.pethost.services.UsuarioService;
 import com.pethost.pethost.utils.DataUtils;
@@ -13,12 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/pets")
@@ -32,38 +30,38 @@ public class PetsController {
     @Autowired
     private UsuarioService usuarioService;
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    // Listar todos os pets
+    // 📌 Listar todos os pets
     @GetMapping("/listar")
     @Operation(summary = "Listar pets", description = "Responsável por listar todos os pets")
-    public ResponseEntity<List<Pet>> listarPets() {
+    public ResponseEntity<List<ListarPetsResponseDto>> listarPets() {
         List<Pet> pets = petService.findAllPets();
-        return new ResponseEntity<>(pets, HttpStatus.OK);
+
+        // 🔥 Converte para DTO antes de retornar a resposta
+        List<ListarPetsResponseDto> responseDtos = pets.stream()
+                .map(ListarPetsResponseDto::fromPet)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseDtos);
     }
 
-    // Listar todos os pets baseado em um Uid de usuario
+    // 📌 Listar todos os pets de um usuário por UID
     @GetMapping("{uid}/listar")
-    @Operation(summary = "Listar pets por Uid do usuario", description = "Responsável por listar todos os pets baseado em um Uid de usuario")
-    public ResponseEntity<List<Pet>> listarPetsByWonerUid(@PathVariable(value = "uid") String uid) {
+    @Operation(summary = "Listar pets por UID do usuário", description = "Responsável por listar todos os pets de um usuário pelo UID")
+    public ResponseEntity<List<ListarPetsResponseDto>> listarPetsByOwnerUid(@PathVariable(value = "uid") String uid) {
         List<Pet> pets = petService.findAllPetsByUid(uid);
-        return new ResponseEntity<>(pets, HttpStatus.OK);
+
+        // 🔥 Converte para DTO antes de retornar a resposta
+        List<ListarPetsResponseDto> responseDtos = pets.stream()
+                .map(ListarPetsResponseDto::fromPet)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseDtos);
     }
 
-    // Buscar um pet por ID
-    @GetMapping("/buscar/{id}")
-    @Operation(summary = "Buscar pet por ID", description = "Responsável por buscar um único pet pelo ID")
-    public ResponseEntity<Pet> listarPetUnico(@PathVariable(value = "id") long id) {
-        Optional<Pet> pet = Optional.ofNullable(petService.buscarPorId(id));
-        return pet.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    // Criar um novo pet
+    // 📌 Criar um novo pet associado a um usuário
     @PostMapping("/criar")
-    @Operation(summary = "Criar pet", description = "Responsável por Criar um pet associado a um usuario")
-    public ResponseEntity<Pet> criarPet(@RequestBody CriarPetRequestDto criarPetRequestDto) {
-        // Converte CriarPetRequestDto para Pet
+    @Operation(summary = "Criar pet", description = "Responsável por criar um pet associado a um usuário")
+    public ResponseEntity<ListarPetsResponseDto> criarPet(@RequestBody CriarPetRequestDto criarPetRequestDto) {
         Pet pet = Pet.builder()
                 .tipoPet(criarPetRequestDto.getTipoPet())
                 .nomePet(criarPetRequestDto.getNomePet())
@@ -75,25 +73,49 @@ public class PetsController {
                 .castrado(criarPetRequestDto.getCastrado())
                 .foto(criarPetRequestDto.getFoto())
                 .criadoEm(LocalDateTime.now())
-                .usuario(usuarioService.findByUid(criarPetRequestDto.getUidUsuario())) // Associa o usuário
+                .usuario(usuarioService.findByUid(criarPetRequestDto.getUidUsuario())) // 🔥 Associa o usuário corretamente
                 .build();
 
-        // Chama o serviço para salvar o pet
-        petService.criarPet(pet);
+        // Salva no banco de dados
+        Pet petSalvo = petService.criarPet(pet);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(pet);
+        // 🔥 Retorna o DTO convertido
+        return ResponseEntity.status(HttpStatus.CREATED).body(ListarPetsResponseDto.fromPet(petSalvo));
     }
 
-    // Atualizar um pet existente
+    // 📌 Atualizar um pet existente
     @PutMapping("/atualizar")
     @Operation(summary = "Atualizar pet", description = "Responsável por atualizar um pet existente")
-    public ResponseEntity<Pet> atualizarPets(@RequestBody Pet pet) {
-        Optional<Pet> updatedPet = Optional.ofNullable(petService.atualizarPet(pet));
-        return updatedPet.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ListarPetsResponseDto> atualizarPets(@RequestBody Pet petAtualizado) {
+        Optional<Pet> petExistente = Optional.ofNullable(petService.buscarPorId(petAtualizado.getId()));
+
+        if (petExistente.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Pet pet = petExistente.get();
+
+        // 🔥 Mantém o usuário original para evitar perda de relacionamento
+        pet.setUsuario(petExistente.get().getUsuario());
+
+        // Atualiza os campos do pet
+        pet.setNomePet(petAtualizado.getNomePet());
+        pet.setRaca(petAtualizado.getRaca());
+        pet.setGenero(petAtualizado.getGenero());
+        pet.setTamanho(petAtualizado.getTamanho());
+        pet.setDataNascimento(petAtualizado.getDataNascimento());
+        pet.setVacina(petAtualizado.getVacina()); // 🔥 Agora funciona corretamente
+        pet.setCastrado(petAtualizado.getCastrado()); // 🔥 Agora funciona corretamente
+        pet.setFoto(petAtualizado.getFoto());
+
+        // Salva as alterações
+        Pet petSalvo = petService.atualizarPet(pet);
+
+        // 🔥 Retorna o DTO atualizado
+        return ResponseEntity.ok(ListarPetsResponseDto.fromPet(petSalvo));
     }
 
-    // Deletar um pet por ID
+    // 📌 Deletar um pet por ID
     @DeleteMapping("/deletar/{id}")
     @Operation(summary = "Deletar pet", description = "Responsável por deletar um pet por ID")
     public ResponseEntity<Void> deletarPets(@PathVariable(value = "id") long id) {
