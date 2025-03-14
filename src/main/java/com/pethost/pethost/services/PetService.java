@@ -17,8 +17,46 @@ public class PetService {
     private PetRepository petRepository;
 
     // Método para listar todos os pets
-    public List<Pet> findAllPets() {
-        return petRepository.findAll();
+    public List<ListarPetsResponseDto> findAllPets() {
+        List<Pet> petsData = petRepository.findAll();
+        List<ListarPetsResponseDto> petsResponse = petsData.stream().map(
+            pet -> new  ListarPetsResponseDto (
+                pet.getId(),
+                pet.getTipoPet(),
+                pet.getNomePet(),
+                pet.getRaca(),
+                pet.getGenero(),
+                pet.getTamanho(),
+                pet.getDataNascimento(),
+                pet.getVacina(),
+                pet.getCastrado(),
+                pet.getFoto(),
+                pet.getCriadoEm(),
+                pet.getUidUsiario()
+                )
+            ).collect(Collectors.toList());
+        return petsResponse;
+    }
+
+    public List<Pet> findAllPetsByUid(String uid) {
+        List<Pet> petsData = petRepository.findByOwnerUid(uid);
+        List<ListarPetsResponseDto> petsResponse = petsData.stream().map(
+            pet -> new  ListarPetsResponseDto (
+                pet.getId(),
+                pet.getTipoPet(),
+                pet.getNomePet(),
+                pet.getRaca(),
+                pet.getGenero(),
+                pet.getTamanho(),
+                pet.getDataNascimento(),
+                pet.getVacina(),
+                pet.getCastrado(),
+                pet.getFoto(),
+                pet.getCriadoEm(),
+                pet.getUidUsiario()
+                )
+            ).collect(Collectors.toList());
+        return petsResponse;
     }
 
     // Método para criar um novo pet
@@ -39,14 +77,31 @@ public class PetService {
     }
 
     // Método para atualizar um pet
-    public Pet atualizarPet(Pet pet) {
+    public ListarPetsResponseDto atualizarPet(Pet pet) {
         if (!petRepository.existsById(pet.getId())) {
             throw new PetNotFoundException(); // Lança exceção se o pet não existir
         }
         if (pet.getNomePet() == null || pet.getNomePet().isEmpty()) {
             throw new InvalidPetException(); // Lança exceção se os dados do pet forem inválidos
         }
-        return petRepository.save(pet);
+        
+        Pet petData = petRepository.save(pet);
+
+        ListarPetsResponseDto response = new ListarPetsResponseDto (
+                petData.getId(),
+                petData.getTipoPet(),
+                petData.getNomePet(),
+                petData.getRaca(),
+                petData.getGenero(),
+                petData.getTamanho(),
+                petData.getDataNascimento(),
+                petData.getVacina(),
+                petData.getCastrado(),
+                petData.getFoto(),
+                petData.getCriadoEm(),
+                petData.getUidUsiario()
+                );
+        return response;
     }
 
     // Método para buscar um pet por ID

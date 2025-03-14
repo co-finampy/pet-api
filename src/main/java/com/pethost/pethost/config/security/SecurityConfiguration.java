@@ -27,12 +27,12 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 ).sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -43,13 +43,27 @@ public class SecurityConfiguration {
                 .build();
     }
 
-    @Bean
+      @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        
+        // 🔹 Permitir seu front-end local e a URL do Railway
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:3000", 
+            "https://pet-api-production.up.railway.app"
+        ));
+        
+        configuration.setAllowCredentials(true);
+        
+        // 🔹 Permitir métodos HTTP
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("authorization", "content-type"));
-
+        
+        // 🔹 Permitir cabeçalhos específicos
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        
+        // 🔹 Expor cabeçalhos necessários
+        configuration.setExposedHeaders(List.of("Authorization"));
+    
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

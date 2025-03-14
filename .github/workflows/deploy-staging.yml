@@ -1,0 +1,30 @@
+# name: Deploy Spring Boot no Railway
+
+# on:
+#   push:
+#     branches:
+#       - main  # Ou a branch de deploy
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout do código
+#         uses: actions/checkout@v3
+
+#       - name: Configurar JDK 21
+#         uses: actions/setup-java@v3
+#         with:
+#           distribution: 'temurin'
+#           java-version: '21'
+
+#       - name: Construir aplicação com Maven
+#         run: mvn clean package -DskipTests
+
+#       - name: Deploy no Railway
+#         env:
+#           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+#         run: |
+#           curl -fsSL https://railway.app/install.sh | sh
+#           railway up --service=sua-api-no-railway
