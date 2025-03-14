@@ -16,49 +16,46 @@ public class PetService {
     @Autowired
     private PetRepository petRepository;
 
-    // Método para listar todos os pets
+    // 📌 Método para listar todos os pets
     public List<Pet> findAllPets() {
         return petRepository.findAll();
     }
 
+    // 📌 Método para listar pets por UID do dono
     public List<Pet> findAllPetsByUid(String uid) {
         return petRepository.findByOwnerUid(uid);
     }
 
-    // Método para criar um novo pet
+    // 📌 Criar um novo pet
     public Pet criarPet(Pet pet) {
         if (pet.getNomePet() == null || pet.getNomePet().isEmpty()) {
-            throw new InvalidPetException(); // Lança exceção se o nome do pet for inválido
+            throw new InvalidPetException();
         }
         return petRepository.save(pet);
     }
 
-    // Método para deletar um pet
+    // 📌 Deletar um pet (Agora retorna `true` se for bem-sucedido)
     public boolean deletarPet(long id) {
         if (!petRepository.existsById(id)) {
-            throw new PetNotFoundException(); // Lança exceção se o pet não existir
+            throw new PetNotFoundException();
         }
         petRepository.deleteById(id);
-        return false;
+        return true;
     }
 
-    // Método para atualizar um pet
+    // 📌 Atualizar um pet
     public Pet atualizarPet(Pet pet) {
         if (!petRepository.existsById(pet.getId())) {
-            throw new PetNotFoundException(); // Lança exceção se o pet não existir
+            throw new PetNotFoundException();
         }
         if (pet.getNomePet() == null || pet.getNomePet().isEmpty()) {
-            throw new InvalidPetException(); // Lança exceção se os dados do pet forem inválidos
+            throw new InvalidPetException();
         }
         return petRepository.save(pet);
     }
 
-    // Método para buscar um pet por ID
+    // 📌 Buscar um pet por ID
     public Pet buscarPorId(long id) {
-        Optional<Pet> pet = Optional.ofNullable(petRepository.findById(id));
-        if (pet.isEmpty()) {
-            throw new PetNotFoundException(); // Lança exceção se o pet não for encontrado
-        }
-        return pet.get();
+        return petRepository.findById(id);
     }
 }
