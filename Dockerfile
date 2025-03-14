@@ -7,13 +7,13 @@ WORKDIR /app
 # Copia os arquivos do projeto para dentro do container
 COPY . .
 
-# Compila o projeto sem executar testes
+# Executa o Maven diretamente, sem `mvnw`
 RUN mvn clean package -DskipTests
 
 # Etapa de runtime: Usa uma imagem menor do JDK para rodar o JAR
 FROM eclipse-temurin:17-jdk
 
-# Define o diretório de trabalho no container
+# Define o diretório de trabalho
 WORKDIR /app
 
 # Expõe a porta da aplicação
