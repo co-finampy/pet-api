@@ -37,16 +37,16 @@ public class PetsController {
     // Listar todos os pets
     @GetMapping("/listar")
     @Operation(summary = "Listar pets", description = "Responsável por listar todos os pets")
-    public ResponseEntity<List<Pet>> listarPets() {
-        List<Pet> pets = petService.findAllPets();
+    public ResponseEntity<List<ListarPetsResponseDto>> listarPets() {
+        List<ListarPetsResponseDto> pets = petService.findAllPets();
         return new ResponseEntity<>(pets, HttpStatus.OK);
     }
 
     // Listar todos os pets baseado em um Uid de usuario
     @GetMapping("{uid}/listar")
     @Operation(summary = "Listar pets por Uid do usuario", description = "Responsável por listar todos os pets baseado em um Uid de usuario")
-    public ResponseEntity<List<Pet>> listarPetsByWonerUid(@PathVariable(value = "uid") String uid) {
-        List<Pet> pets = petService.findAllPetsByUid(uid);
+    public ResponseEntity<List<ListarPetsResponseDto>> listarPetsByWonerUid(@PathVariable(value = "uid") String uid) {
+        List<ListarPetsResponseDto> pets = petService.findAllPets();
         return new ResponseEntity<>(pets, HttpStatus.OK);
     }
 
@@ -85,10 +85,11 @@ public class PetsController {
     }
 
     // Atualizar um pet existente
-    @PutMapping("/atualizar")
+    @PutMapping("/atualizar/{uid}")
     @Operation(summary = "Atualizar pet", description = "Responsável por atualizar um pet existente")
-    public ResponseEntity<Pet> atualizarPets(@RequestBody Pet pet) {
-        Optional<Pet> updatedPet = Optional.ofNullable(petService.atualizarPet(pet));
+    public ResponseEntity<ListarPetsResponseDto> atualizarPets(@RequestBody Pet pet, @PathVariable(value = "uid") String uid ) {
+        pet.SetUsuario(usuarioService.findByUid(criarPetRequestDto.getUidUsuario()));
+        ListarPetsResponseDto updatedPet = petService.atualizarPet(pet);
         return updatedPet.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
