@@ -99,14 +99,18 @@ public class PetsController {
         pet.setUsuario(petExistente.get().getUsuario());
 
         // Atualiza os campos do pet
+
+        // Atualiza os campos do pet
+        pet.setTipoPet(petAtualizado.getTipoPet()); // 🔥 AGORA `tipoPet` É ATUALIZADO!
         pet.setNomePet(petAtualizado.getNomePet());
         pet.setRaca(petAtualizado.getRaca());
         pet.setGenero(petAtualizado.getGenero());
         pet.setTamanho(petAtualizado.getTamanho());
         pet.setDataNascimento(petAtualizado.getDataNascimento());
-        pet.setVacina(petAtualizado.getVacina()); // 🔥 Agora funciona corretamente
-        pet.setCastrado(petAtualizado.getCastrado()); // 🔥 Agora funciona corretamente
+        pet.setVacina(petAtualizado.getVacina());
+        pet.setCastrado(petAtualizado.getCastrado());
         pet.setFoto(petAtualizado.getFoto());
+
 
         // Salva as alterações
         Pet petSalvo = petService.atualizarPet(pet);
