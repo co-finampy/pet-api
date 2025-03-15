@@ -11,15 +11,23 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+=======
+import org.springframework.web.bind.annotation.*;
+>>>>>>> develop
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Rotas de login")
+<<<<<<< HEAD
+=======
+@CrossOrigin("*")
+>>>>>>> develop
 public class LoginController {
 
     private final LoginService loginService;
