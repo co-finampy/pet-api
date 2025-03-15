@@ -27,12 +27,18 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Ativando corretamente o CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 🔥 Habilita CORS corretamente
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(
+                                "/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/swagger-ui.html",
+                                "/webjars/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -46,20 +52,23 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ✅ Permitindo o frontend local e a URL do backend em produção
+        // 🔥 Agora permite requisições do frontend local e produção
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "https://pet-api-production.up.railway.app"
         ));
 
-        // ✅ Permitindo credenciais (para autenticação JWT)
-        configuration.setAllowCredentials(true);
-
-        // ✅ Métodos HTTP permitidos
+        // 🔥 Métodos HTTP permitidos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // ✅ Headers permitidos
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        // 🔥 Headers permitidos
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "x-requested-with"));
+
+        // 🔥 Expondo o header Authorization para o frontend
+        configuration.setExposedHeaders(List.of("Authorization"));
+
+        // 🔥 Permitir credenciais (cookies, JWT)
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
