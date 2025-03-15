@@ -31,13 +31,11 @@ public class UsuarioService {
         return usuarioRepository.findById(uid).orElseThrow(UsuarioNotFoundException::new);
     }
 
-<<<<<<< HEAD
-=======
+    // Encontrar um usuário pelo Email
     public Usuario findByEmail(String email) {
         return usuarioRepository.findByEmail(email).orElseThrow(UsuarioNotFoundException::new);
     }
 
->>>>>>> develop
     // Salvar um novo usuário
     public Usuario save(Usuario usuario) {
         // Verificar se o nome e o e-mail são válidos

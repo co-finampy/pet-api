@@ -27,10 +27,7 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-<<<<<<< HEAD
-=======
-                .cors(cors -> cors.and())
->>>>>>> develop
+                .cors(cors -> cors.and()) // Mantendo CORS da branch develop
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
