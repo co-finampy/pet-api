@@ -24,6 +24,6 @@ public class SwaggerConfig {
                 .components(new Components().addSecuritySchemes("bearerAuth",
                         new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
                 // 🔥 Adicionando a URL correta para evitar erro de Mixed Content
-                .addServersItem(new Server().url("https://pet-api-production.up.railway.app"));
+                .addServersItem(new Server().url("http://localhost:8080/"));
     }
 }
