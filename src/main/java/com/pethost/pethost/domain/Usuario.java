@@ -1,10 +1,9 @@
 package com.pethost.pethost.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,12 +11,12 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-@Builder
+@Entity
+@Table(name = "TB_USER")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "TB_USER")
+@Builder
 public class Usuario implements Serializable, UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -33,19 +32,13 @@ public class Usuario implements Serializable, UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore // 🔥 Evita expor a senha no JSON
     @Column(name = "senha", nullable = false)
     private String senha;
 
-    @Column(name = "telefone")
     private String telefone;
-
-    @Column(name = "tipo_usuario")
     private String tipoUsuario;
-
-    @Column(name = "endereco")
     private String endereco;
-
-    @Column(name = "foto_url")
     private String fotoUrl;
 
     @ManyToOne
@@ -53,9 +46,10 @@ public class Usuario implements Serializable, UserDetails {
     private Calendario datasDisponiveis;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // 🔥 Permite a relação ser gerenciada sem loop
     private List<Pet> pets;
 
-
+    @JsonIgnore // 🔥 Evita expor o token do usuário
     @Column(name = "token")
     private String token;
 

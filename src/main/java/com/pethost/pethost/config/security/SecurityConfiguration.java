@@ -55,6 +55,7 @@ public class SecurityConfiguration {
         // 🔥 Agora permite requisições do frontend local e produção
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "http://localhost:8080",
                 "https://pet-api-production.up.railway.app"
         ));
 

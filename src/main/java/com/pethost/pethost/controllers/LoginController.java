@@ -1,6 +1,5 @@
 package com.pethost.pethost.controllers;
 
-import com.pethost.pethost.config.security.JwtService;
 import com.pethost.pethost.domain.Usuario;
 import com.pethost.pethost.dtos.LoginRequestDto;
 import com.pethost.pethost.dtos.LoginResponseDto;
@@ -12,6 +11,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.pethost.pethost.config.security.JwtService;
+
 
 @AllArgsConstructor
 @RestController

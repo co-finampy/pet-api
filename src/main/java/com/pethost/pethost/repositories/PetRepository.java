@@ -1,12 +1,9 @@
 package com.pethost.pethost.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.pethost.pethost.domain.Pet;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
-
-@Repository
 public interface PetRepository extends JpaRepository<Pet, Long> {
-    Pet findById(long id);
+    List<Pet> findByUsuarioEmail(String email); // ✅ Agora busca pelo e-mail
 }

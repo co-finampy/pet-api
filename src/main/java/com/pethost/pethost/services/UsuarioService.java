@@ -6,39 +6,38 @@ import com.pethost.pethost.exceptions.UsuarioNotFoundException;
 import com.pethost.pethost.exceptions.InvalidUsuarioException;
 import com.pethost.pethost.repositories.CalendarioRepository;
 import com.pethost.pethost.repositories.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final CalendarioRepository calendarioRepository;
 
-    @Autowired
-    private CalendarioRepository calendarioRepository;
-
-    // Encontrar todos os usuários
+    // ✅ Encontrar todos os usuários
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
 
-    // Encontrar um usuário pelo UID
+    // ✅ Encontrar um usuário pelo UID
     public Usuario findByUid(String uid) {
-        return usuarioRepository.findById(uid).orElseThrow(UsuarioNotFoundException::new);
+        return usuarioRepository.findByUid(uid)
+                .orElseThrow(() -> new UsuarioNotFoundException());
     }
 
-    // Encontrar um usuário pelo Email
+    // ✅ Encontrar um usuário pelo Email
     public Usuario findByEmail(String email) {
-        return usuarioRepository.findByEmail(email).orElseThrow(UsuarioNotFoundException::new);
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsuarioNotFoundException());
     }
 
-    // Salvar um novo usuário
+    // ✅ Criar um novo usuário
     public Usuario save(Usuario usuario) {
-        // Verificar se o nome e o e-mail são válidos
         if (usuario.getNome() == null || usuario.getNome().isEmpty()) {
             throw new InvalidUsuarioException();
         }
@@ -46,47 +45,49 @@ public class UsuarioService {
             throw new InvalidUsuarioException();
         }
 
-        // Verificar se o Calendario já existe, se não existir, criá-lo
-        Calendario calendario = usuario.getDatasDisponiveis();
-        if (calendario != null) {
+        // Verifica e salva o calendário, se houver
+        if (usuario.getDatasDisponiveis() != null) {
+            Calendario calendario = usuario.getDatasDisponiveis();
             Optional<Calendario> existingCalendario = calendarioRepository.findByUid(calendario.getUid());
-            if (existingCalendario.isEmpty()) {
-                calendario = calendarioRepository.save(calendario);
-            } else {
-                calendario = existingCalendario.get();
-            }
-            usuario.setDatasDisponiveis(calendario);
+
+            usuario.setDatasDisponiveis(existingCalendario.orElseGet(() -> calendarioRepository.save(calendario)));
         }
 
         return usuarioRepository.save(usuario);
     }
 
-    // Atualizar um usuário existente
+    // ✅ Atualizar um usuário existente
     public Usuario update(String uid, Usuario updatedUsuario) {
-        Usuario existingUsuario = findByUid(uid); // Lança exceção se o usuário não for encontrado
+        Usuario existingUsuario = findByUid(uid);
 
-        if (updatedUsuario.getNome() == null || updatedUsuario.getNome().isEmpty()) {
-            throw new InvalidUsuarioException();
+        if (updatedUsuario.getNome() != null && !updatedUsuario.getNome().isEmpty()) {
+            existingUsuario.setNome(updatedUsuario.getNome());
         }
-        if (updatedUsuario.getEmail() == null || updatedUsuario.getEmail().isEmpty()) {
-            throw new InvalidUsuarioException();
+        if (updatedUsuario.getEmail() != null && !updatedUsuario.getEmail().isEmpty()) {
+            existingUsuario.setEmail(updatedUsuario.getEmail());
         }
-
-        existingUsuario.setNome(updatedUsuario.getNome());
-        existingUsuario.setEmail(updatedUsuario.getEmail());
-        existingUsuario.setSenha(updatedUsuario.getSenha());
-        existingUsuario.setTelefone(updatedUsuario.getTelefone());
-        existingUsuario.setTipoUsuario(updatedUsuario.getTipoUsuario());
-        existingUsuario.setEndereco(updatedUsuario.getEndereco());
-        existingUsuario.setFotoUrl(updatedUsuario.getFotoUrl());
-        existingUsuario.setDatasDisponiveis(updatedUsuario.getDatasDisponiveis());
+        if (updatedUsuario.getSenha() != null) {
+            existingUsuario.setSenha(updatedUsuario.getSenha());
+        }
+        if (updatedUsuario.getTelefone() != null) {
+            existingUsuario.setTelefone(updatedUsuario.getTelefone());
+        }
+        if (updatedUsuario.getTipoUsuario() != null) {
+            existingUsuario.setTipoUsuario(updatedUsuario.getTipoUsuario());
+        }
+        if (updatedUsuario.getEndereco() != null) {
+            existingUsuario.setEndereco(updatedUsuario.getEndereco());
+        }
+        if (updatedUsuario.getFotoUrl() != null) {
+            existingUsuario.setFotoUrl(updatedUsuario.getFotoUrl());
+        }
 
         return usuarioRepository.save(existingUsuario);
     }
 
-    // Deletar um usuário pelo UID
+    // ✅ Deletar um usuário pelo UID
     public boolean deleteByUid(String uid) {
-        Usuario usuario = findByUid(uid); // Lança exceção se o usuário não for encontrado
+        Usuario usuario = findByUid(uid);
         usuarioRepository.delete(usuario);
         return true;
     }

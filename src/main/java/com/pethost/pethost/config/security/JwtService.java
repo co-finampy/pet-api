@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,62 +24,55 @@ public class JwtService {
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
 
+    // ✅ Gera um token JWT
     public String generateToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, jwtExpiration);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("uid", userDetails.getUsername()); // 🔥 Garante que o token contém o UID
+        return buildToken(claims, userDetails, jwtExpiration);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
-    }
-
-    // cria o token
-    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+    // ✅ Constrói o token com claims personalizadas
+    private String buildToken(Map<String, Object> claims, UserDetails userDetails, long expiration) {
         return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername()) // 🔥 O UID será o subject
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // verifica se o token está valido
-    public boolean isTokenvalid(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    // ✅ Extrai o UID do token
+    public String extractUid(String token) {
+        return extractAllClaims(token).getSubject(); // 🔥 Agora retorna o UID diretamente
     }
 
-    // extrai o email do usuario
-    public String extractUsername(String token) {
-        Claims claims = extractAllClaims(token);
-        return claims.getSubject();
+    // ✅ Verifica se o token é válido
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        String uid = extractUid(token);
+        return (uid.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public long getExpirationTime() {
-        return jwtExpiration;
-    }
-
-    // verifica se o token está expirado
+    // ✅ Verifica se o token expirou
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    // extrai o tempo de expiração
+    // ✅ Extrai a data de expiração do token
     private Date extractExpiration(String token) {
-        Claims claims = extractAllClaims(token);
-        return claims.getExpiration();
+        return extractAllClaims(token).getExpiration();
     }
 
-    // retorna as claims
+    // ✅ Retorna as claims do token
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
+    // ✅ Obtém a chave de assinatura
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

@@ -1,16 +1,18 @@
 package com.pethost.pethost.controllers;
 
-import com.pethost.pethost.domain.Pet;
+import com.pethost.pethost.dtos.PetDTO;
 import com.pethost.pethost.services.PetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/pets")
@@ -18,49 +20,94 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class PetsController {
 
-    @Autowired
-    private PetService petService;
+    private static final Logger log = LoggerFactory.getLogger(PetsController.class);
+    private final PetService petService;
 
-    // Listar todos os pets
+    public PetsController(PetService petService) {
+        this.petService = petService;
+    }
+
+    // ✅ Listar todos os pets
     @GetMapping("/listar")
-    @Operation(summary = "Listar pets", description = "Responsável por listar todos os pets")
-    public ResponseEntity<List<Pet>> listarPets() {
-        List<Pet> pets = petService.findAllPets();
-        return new ResponseEntity<>(pets, HttpStatus.OK);
+    @Operation(summary = "Listar pets", description = "Lista todos os pets cadastrados")
+    public ResponseEntity<List<PetDTO>> listarPets() {
+        log.info("📌 Solicitada listagem de todos os pets");
+        List<PetDTO> pets = petService.findAllPets();
+        return pets.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(pets);
     }
 
-    // Buscar um pet por ID
+    // ✅ Buscar um pet por ID
     @GetMapping("/buscar/{id}")
-    @Operation(summary = "Buscar pet por ID", description = "Responsável por buscar um único pet pelo ID")
-    public ResponseEntity<Pet> listarPetUnico(@PathVariable(value = "id") long id) {
-        Optional<Pet> pet = Optional.ofNullable(petService.buscarPorId(id));
-        return pet.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @Operation(summary = "Buscar pet por ID", description = "Busca um pet pelo ID")
+    public ResponseEntity<PetDTO> listarPetUnico(@PathVariable(value = "id") long id) {
+        log.info("📌 Buscando pet com ID: {}", id);
+        return ResponseEntity.ok(petService.buscarPorId(id));
     }
 
-    // Criar um novo pet
+    // ✅ Criar um novo pet vinculado ao usuário autenticado
     @PostMapping("/criar")
-    @Operation(summary = "Criar pet", description = "Responsável por criar um novo pet")
-    public ResponseEntity<Pet> criarPet(@RequestBody Pet pet) {
-        Pet createdPet = petService.criarPet(pet);
-        return new ResponseEntity<>(createdPet, HttpStatus.CREATED);
+    @Operation(summary = "Criar pet", description = "Cria um novo pet automaticamente vinculado ao usuário autenticado")
+    public ResponseEntity<PetDTO> criarPet(@RequestBody PetDTO petDTO) {
+        String emailUsuario = getEmailUsuarioAutenticado();
+
+        if (emailUsuario == null) {
+            log.error("❌ Tentativa de criar pet sem autenticação!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("📌 Criando pet para usuário: {}", emailUsuario);
+        PetDTO createdPet = petService.criarPet(petDTO, emailUsuario);
+
+        if (createdPet == null) {
+            log.error("❌ Erro ao criar pet para usuário: {}", emailUsuario);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        log.info("✅ Pet criado com sucesso! Nome: {}", createdPet.getNomePet());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPet);
     }
 
-    // Atualizar um pet existente
+    // ✅ Atualizar um pet existente
     @PutMapping("/atualizar")
-    @Operation(summary = "Atualizar pet", description = "Responsável por atualizar um pet existente")
-    public ResponseEntity<Pet> atualizarPets(@RequestBody Pet pet) {
-        Optional<Pet> updatedPet = Optional.ofNullable(petService.atualizarPet(pet));
-        return updatedPet.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @Operation(summary = "Atualizar pet", description = "Atualiza um pet existente")
+    public ResponseEntity<PetDTO> atualizarPets(@RequestBody PetDTO petDTO) {
+        log.info("📌 Atualizando pet ID: {}", petDTO.getId());
+        return ResponseEntity.ok(petService.atualizarPet(petDTO));
     }
 
-    // Deletar um pet por ID
+    // ✅ Deletar um pet por ID
     @DeleteMapping("/deletar/{id}")
-    @Operation(summary = "Deletar pet", description = "Responsável por deletar um pet por ID")
-    public ResponseEntity<Void> deletarPets(@PathVariable(value = "id") long id) {
+    @Operation(summary = "Deletar pet", description = "Deleta um pet pelo ID")
+    public ResponseEntity<String> deletarPets(@PathVariable(value = "id") long id) {
+        log.info("📌 Solicitada exclusão do pet ID: {}", id);
         boolean isDeleted = petService.deletarPet(id);
-        return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return isDeleted
+                ? ResponseEntity.ok("✅ Pet deletado com sucesso.")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Pet não encontrado.");
+    }
+
+    // ✅ Buscar pets do usuário autenticado
+    @GetMapping("/buscar/meus-pets")
+    @Operation(summary = "Buscar pets do usuário autenticado", description = "Lista todos os pets cadastrados pelo usuário autenticado")
+    public ResponseEntity<List<PetDTO>> buscarMeusPets() {
+        String emailUsuario = getEmailUsuarioAutenticado();
+
+        if (emailUsuario == null) {
+            log.error("❌ Tentativa de buscar pets sem autenticação!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("📌 Buscando pets do usuário: {}", emailUsuario);
+        List<PetDTO> pets = petService.buscarPetsPorUsuario(emailUsuario);
+        return pets.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(pets);
+    }
+
+    // ✅ Obtém o e-mail do usuário autenticado via JWT
+    private String getEmailUsuarioAutenticado() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername(); // ✅ Retorna o e-mail do usuário autenticado
+        }
+        return null;
     }
 }
