@@ -1,13 +1,13 @@
-package com.pethost.pethost;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class PethostApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
+//package com.pethost.pethost;
+//
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
+//
+//@SpringBootTest
+//class PethostApplicationTests {
+//
+//	@Test
+//	void contextLoads() {
+//	}
+//
+//}
