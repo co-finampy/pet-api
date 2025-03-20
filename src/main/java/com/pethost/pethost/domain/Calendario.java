@@ -1,31 +1,36 @@
 package com.pethost.pethost.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
-
 @Entity
-@Table(name = "TB_CALENDARIO")
+@Table(name = "tb_calendario")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Calendario implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // ✅ Agora o banco gera o ID automaticamente
     private Long uid;
 
-    private String uidAnfitriao;
+    // 🔥 Relacionamento correto: Um calendário pertence a um único usuário (anfitrião)
+    @OneToOne
+    @JoinColumn(name = "usuario_uid", referencedColumnName = "uid")
+    @JsonBackReference
+    private Usuario usuario;
 
-    @ElementCollection // Usado para coleções de tipos básicos
-    @CollectionTable(name = "TB_CALENDARIO_DIAS", joinColumns = @JoinColumn(name = "calendario_uid"))
+    // ✅ Apenas as datas disponíveis (sem horário)
+    @ElementCollection
+    @CollectionTable(name = "tb_calendario_dias", joinColumns = @JoinColumn(name = "calendario_uid"))
     @Column(name = "dia")
-    private List<LocalDateTime> dias;
+    private List<LocalDate> dias;
 }

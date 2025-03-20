@@ -1,6 +1,8 @@
 package com.pethost.pethost.controllers;
 
 import com.pethost.pethost.domain.Usuario;
+import com.pethost.pethost.dtos.RegistrarUsuarioDto;
+import com.pethost.pethost.dtos.UsuarioUpdateDto;
 import com.pethost.pethost.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/usuarios")
@@ -20,55 +21,73 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // Listar todos os usuários
     @GetMapping("/listar")
-    @Operation(summary = "Listar usuarios", description = "Responsável por listar todos os usuarios")
+    @Operation(summary = "Listar usuários", description = "Responsável por listar todos os usuários")
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         List<Usuario> usuarios = usuarioService.findAll();
-        return new ResponseEntity<>(usuarios, HttpStatus.OK);
+        return ResponseEntity.ok(usuarios);
     }
 
-    // Buscar um usuário por UID
     @GetMapping("/buscar/id/{uid}")
-    @Operation(summary = "Buscar usuario por ID", description = "Responsável por buscar um unico usuario pelo ID")
+    @Operation(summary = "Buscar usuário por ID", description = "Responsável por buscar um único usuário pelo ID")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable String uid) {
-        Optional<Usuario> usuario = Optional.ofNullable(usuarioService.findByUid(uid));
-        return usuario.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Usuario usuario = usuarioService.findByUid(uid);
+        return ResponseEntity.ok(usuario);
     }
 
-    // Buscar um usuário por email
     @GetMapping("/buscar/email/{email}")
-    @Operation(summary = "Buscar usuario por Email", description = "Responsável por buscar um unico usuario pelo Email")
+    @Operation(summary = "Buscar usuário por Email", description = "Responsável por buscar um único usuário pelo Email")
     public ResponseEntity<Usuario> getUsuarioByEmail(@PathVariable String email) {
-        Optional<Usuario> usuario = Optional.ofNullable(usuarioService.findByEmail(email));
-        return usuario.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Usuario usuario = usuarioService.findByEmail(email);
+        return ResponseEntity.ok(usuario);
     }
 
-    // Criar um novo usuário
+    @GetMapping("/buscar/cpf/{cpf}")
+    @Operation(summary = "Buscar usuário por CPF", description = "Responsável por buscar um único usuário pelo CPF")
+    public ResponseEntity<Usuario> getUsuarioByCpf(@PathVariable String cpf) {
+        Usuario usuario = usuarioService.findByCpf(cpf);
+        return ResponseEntity.ok(usuario);
+    }
+
+    @PutMapping("/tornar-anfitriao/{uid}")
+    @Operation(summary = "Tornar usuário um anfitrião", description = "Atualiza um usuário para o tipo ANFITRIÃO")
+    public ResponseEntity<Usuario> tornarAnfitriao(
+            @PathVariable String uid,
+            @RequestBody UsuarioUpdateDto usuarioDto) {
+
+        Usuario usuarioAtualizado = usuarioService.tornarAnfitriao(uid, usuarioDto);
+        return ResponseEntity.ok(usuarioAtualizado);
+    }
+
+
     @PostMapping("/criar")
-    @Operation(summary = "Criar usuario", description = "Responsável por criar um usuario")
-    public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
-        Usuario createdUsuario = usuarioService.save(usuario);
-        return new ResponseEntity<>(createdUsuario, HttpStatus.CREATED);
+    @Operation(summary = "Criar usuário", description = "Responsável por criar um usuário")
+    public ResponseEntity<Usuario> criarUsuario(@RequestBody RegistrarUsuarioDto usuarioDto) {
+        Usuario createdUsuario = usuarioService.criarUsuario(usuarioDto, false); // Cria como USUARIO
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUsuario);
     }
 
-    // Atualizar um usuário existente
+    @PostMapping("/criar-anfitriao")
+    @Operation(summary = "Criar usuário como anfitrião", description = "Criar um novo usuário diretamente como anfitrião")
+    public ResponseEntity<Usuario> criarUsuarioAnfitriao(@RequestBody RegistrarUsuarioDto usuarioDto) {
+        Usuario createdUsuario = usuarioService.criarUsuario(usuarioDto, true); // Cria como ANFITRIAO
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUsuario);
+    }
+
     @PutMapping("/atualizar/{uid}")
-    @Operation(summary = "Atualizar usuario", description = "Responsável por atualizar um usuario por ID")
-    public ResponseEntity<Usuario> atualizarUsuario(@PathVariable String uid, @RequestBody Usuario usuario) {
-        Optional<Usuario> updatedUsuario = Optional.ofNullable(usuarioService.update(uid, usuario));
-        return updatedUsuario.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @Operation(summary = "Atualizar usuário", description = "Responsável por atualizar um usuário por ID")
+    public ResponseEntity<Usuario> atualizarUsuario(
+            @PathVariable String uid,
+            @RequestBody UsuarioUpdateDto usuarioDto) {
+
+        Usuario updatedUsuario = usuarioService.update(uid, usuarioDto);
+        return ResponseEntity.ok(updatedUsuario);
     }
 
-    // Deletar um usuário por UID
     @DeleteMapping("/deletar/{uid}")
-    @Operation(summary = "Deletar usuario", description = "Responsável por deletar um usuario por ID")
+    @Operation(summary = "Deletar usuário", description = "Responsável por deletar um usuário por ID")
     public ResponseEntity<Void> deletarUsuario(@PathVariable String uid) {
-        boolean isDeleted = usuarioService.deleteByUid(uid);
-        return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        usuarioService.deleteByUid(uid);
+        return ResponseEntity.noContent().build();
     }
 }

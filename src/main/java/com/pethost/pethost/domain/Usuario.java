@@ -8,11 +8,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "TB_USER")
+@Table(name = "tb_user")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,25 +34,63 @@ public class Usuario implements Serializable, UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @JsonIgnore // 🔥 Evita expor a senha no JSON
+    @JsonIgnore
     @Column(name = "senha", nullable = false)
     private String senha;
 
+    @Column(name = "telefone")
     private String telefone;
-    private String tipoUsuario;
+
+    @Column(name = "tipo_usuario", nullable = false)
+    private String tipoUsuario; // USUARIO ou ANFITRIAO
+
+    @Column(name = "endereco")
     private String endereco;
+
+    @Column(name = "numero")
+    private String numero;
+
+    @Column(name = "complemento")
+    private String complemento;
+
+    @Column(name = "bairro")
+    private String bairro;
+
+    @Column(name = "cidade")
+    private String cidade;
+
+    @Column(name = "estado")
+    private String estado;
+
+    @Column(name = "cep")
+    private String cep;
+
+    @Column(name = "rg") // 🔹 Não obrigatório, para evitar problemas com `unique`
+    private String rg;
+
+    @Column(name = "cpf", unique = true, nullable = false) // 🔹 Mantém CPF único, mas exige preenchimento
+    private String cpf;
+
+    @Column(name = "data_nascimento")
+    private LocalDate dataNascimento;
+
+    @Column(name = "foto_url")
     private String fotoUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "datas_disponiveis_id")
-    private Calendario datasDisponiveis;
+    // 🔥 Relação correta entre o Usuário (Anfitrião) e as datas disponíveis
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Calendario calendario;
+
+    @Column(name = "valor_diaria")
+    private BigDecimal valorDiaria;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference // 🔥 Permite a relação ser gerenciada sem loop
+    @JsonManagedReference
     private List<Pet> pets;
 
-    @JsonIgnore // 🔥 Evita expor o token do usuário
-    @Column(name = "token")
+    @JsonIgnore
+    @Column(name = "token") // 🔹 Possível problema, verifique se é necessário
     private String token;
 
     @Override
